@@ -63,3 +63,8 @@ ssh -A -o "ProxyCommand ./piggyback.py squid.domain.com 443 %h %p" 10.11.12.13
 
 * Get credentials from a file: `--auth file -f /path/to/file`
 * Create keychain passwords with different names: `--auth keychain -k some_other_name`
+
+## Security Considerations
+
+* Don't enable insecure versions of TLS on your hosts!
+* https://docs.python.org/2/library/ssl.html#ssl-security
