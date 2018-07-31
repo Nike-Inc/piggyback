@@ -128,6 +128,47 @@ def read_keychain_auth(password_name):
 
     return (account, password)
 
+def setup():
+    from string import Template
+
+    def query(prompt, default):
+        i = input(f"{prompt} [{default}]: ")
+        if len(i.strip()) == 0:
+            return default
+        return i
+
+    piggyback_exe = query("piggyback", os.path.abspath(__file__))
+    squid_hostname = query("squid host", "squid")
+    squid_port = query("squid port", "443")
+    filename = query("ssh config file", f"{os.environ['HOME']}/.ssh/piggyback")
+
+    template = Template("""
+Host *
+    SendEnv LANG LC_*
+    ServerAliveInterval 30
+    StrictHostKeyChecking no
+    ProxyCommand $piggyback_exe $squid_hostname $squid_port %h %p
+    ServerAliveInterval 60
+    """.strip())
+
+    with open(filename, "w") as f:
+        f.write(template.substitute(locals()))
+    
+    print(f"created: {filename}")
+    print(f"""
+!! Create your credentials in your keychain !!:
+1: Open "Keychain Access"
+2: Select your login keychain
+3: Select "passwords"
+4: Click the "+" to add a new password
+    Keychain Item Name: piggyback
+    Account Name:       <your proxy username>
+    Password:           <your proxy password>
+5: Click "Add"
+
+Run SSH: ssh -f {filename} <args>
+    """)
+
 def eprint(*args, **kwargs):
     """
     prints to stderr
@@ -135,23 +176,26 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 def main():
-    parser = argparse.ArgumentParser(description=f"piggyback v{VERSION}")
-    parser.add_argument("proxy_host")
-    parser.add_argument("proxy_port", type=int)
-    parser.add_argument("target_host")
-    parser.add_argument("target_port", type=int)
+    if any(a in {"--setup", "--config"} for a in sys.argv):
+        setup()
+    else:
+        parser = argparse.ArgumentParser(description=f"piggyback v{VERSION}")
+        parser.add_argument("proxy_host")
+        parser.add_argument("proxy_port", type=int)
+        parser.add_argument("target_host")
+        parser.add_argument("target_port", type=int)
 
-    parser.add_argument("-a", "--auth", default="keychain", choices=["keychain", "file"], help="which credentials mechanism to use")
-    parser.add_argument("-k", "--keychain", default="piggyback", help="the name of the password entry in your keychain")
-    parser.add_argument("-f", "--auth-file", help="the path to a file which contains: <user>:<password>")
-    args = parser.parse_args()
+        parser.add_argument("-a", "--auth", default="keychain", choices=["keychain", "file"], help="which credentials mechanism to use")
+        parser.add_argument("-k", "--keychain", default="piggyback", help="the name of the password entry in your keychain")
+        parser.add_argument("-f", "--auth-file", help="the path to a file which contains: <user>:<password>")
+        args = parser.parse_args()
 
-    if args.auth == "keychain":
-        auth = read_keychain_auth(args.keychain)
-    elif args.auth == "file":
-        auth = read_file_auth(args.auth_file)
+        if args.auth == "keychain":
+            auth = read_keychain_auth(args.keychain)
+        elif args.auth == "file":
+            auth = read_file_auth(args.auth_file)
 
-    piggyback(args.proxy_host, args.proxy_port, args.target_host, args.target_port, auth)
+        piggyback(args.proxy_host, args.proxy_port, args.target_host, args.target_port, auth)
 
 
 if __name__ == "__main__":
