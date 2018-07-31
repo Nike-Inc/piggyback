@@ -9,6 +9,13 @@ This tool allows you to tunnel SSH (using `ProxyCommand`) via HTTPS (with [Squid
 - If you've been using `corkscrew`, it transmits your proxy authentication credentials in the clear over regular http.
 - This tool uses the built in `ProxyCommand` protocol that `ssh` supports, giving you full access to `ssh` and `scp` without wrappers.
 
+## Easy Installation
+
+1. `brew tap nike-inc/nike`
+1. `brew install piggyback`
+1. `piggyback --config`
+1. Follow the prompts and instructions!
+
 ## Prerequisites
 
 - Python 3: `brew install python3`
