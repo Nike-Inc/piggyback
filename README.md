@@ -79,7 +79,7 @@ To avoid having to pass `-F ~/.ssh/piggyback` all of the time you can make
 piggyback your default SSH configuration.
 
 1. Make it default `mv ~/.ssh/piggyback ~/.ssh/config`
-2. Since there is a host wildcard, you will need to add host exceptions where
+2. If there is a host wildcard, you will need to add host exceptions where
 needed e.g. `!github.com` in this example:
 ```
 Host * !github.com
