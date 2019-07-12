@@ -71,6 +71,48 @@ ssh -A -o "ProxyCommand ./piggyback.py squid.domain.com 443 %h %p" 10.11.12.13
 * Get credentials from a file: `--auth file -f /path/to/file`
 * Create keychain passwords with different names: `--auth keychain -k some_other_name`
 
+## Tips
+
+### Tip: Send all SSH traffic through piggyback
+
+To avoid having to pass `-F ~/.ssh/piggyback` all of the time you can make
+piggyback your default SSH configuration.
+
+1. Make it default `mv ~/.ssh/piggyback ~/.ssh/config`
+2. If there is a host wildcard, you will need to add host exceptions where
+needed e.g. `!github.com` in this example:
+```
+Host * !github.com
+    SendEnv LANG LC_*
+    ServerAliveInterval 30
+    StrictHostKeyChecking no
+    ProxyCommand /usr/local/bin/piggyback squid.example.com 443 %h %p
+    ServerAliveInterval 60
+```
+
+### Tip: Learn general SSH config
+
+The piggyback configuration file is just an SSH configuration file.  You can
+use any configuration options normally available (e.g. `man ssh_config`).
+For example, if you use a different user name on your servers than locally,
+you can set the default user in `~/.ssh/piggyback`. E.g. add `User kermit` in:
+
+```
+Host *
+    User kermit
+    SendEnv LANG LC_*
+    ServerAliveInterval 30
+    StrictHostKeyChecking no
+    ProxyCommand /usr/local/bin/piggyback squid.example.com 443 %h %p
+    ServerAliveInterval 60
+```
+
+Another option is to add the `IdentityFile` directive, e.g. you might copy
+`~/.ssh/piggyback` to `~/.ssh/dev`, add the line
+`IdentityFile ~/.ssh/dev-private-key.pem`, and then ssh with
+`ssh -F ~/.ssh/dev <ip-address>` rather than
+`ssh -F ~/.ssh/piggyback -i ~/.ssh/dev-private-key.pem <ip-address>`.
+
 ## Security Considerations
 
 * Don't enable insecure versions of TLS on your hosts!
