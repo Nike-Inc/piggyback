@@ -95,9 +95,7 @@ Host * !github.com
 The piggyback configuration file is just an SSH configuration file.  You can
 use any configuration options normally available (e.g. `man ssh_config`).
 For example, if you use a different user name on your servers than locally,
-you can set the default user in `~/.ssh/piggyback`.
-
-E.g. add `User kermit` in
+you can set the default user in `~/.ssh/piggyback`. E.g. add `User kermit` in:
 
 ```
 Host *
