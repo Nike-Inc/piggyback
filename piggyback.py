@@ -166,7 +166,7 @@ Host *
     Password:           <your proxy password>
 5: Click "Add"
 
-Run SSH: ssh -f {filename} <args>
+Run SSH: ssh -F {filename} <args>
     """)
 
 def eprint(*args, **kwargs):
@@ -200,4 +200,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
+ 
