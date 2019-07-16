@@ -80,9 +80,9 @@ piggyback your default SSH configuration.
 
 1. Make it default `mv ~/.ssh/piggyback ~/.ssh/config`
 2. If there is a host wildcard, you will need to add host exceptions where
-needed e.g. `!github.com` in this example:
+needed e.g. `!github.* !bitbucket.*` in this example:
 ```
-Host * !github.com
+Host * !github.* !bitbucket.*
     SendEnv LANG LC_*
     ServerAliveInterval 30
     StrictHostKeyChecking no
